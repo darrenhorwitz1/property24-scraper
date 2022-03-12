@@ -1,0 +1,24 @@
+{
+  "name": "property24-scraper",
+  "version": "1.0.0",
+  "description": "This is a web scraper that will be used to scrap property prices and meta data pertaining to listings on property 24",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darrenhorwitz1/property24-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/darrenhorwitz1/property24-scraper/issues"
+  },
+  "type": "module",
+  "homepage": "https://github.com/darrenhorwitz1/property24-scraper#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
+    "node-fetch": "^3.2.3"
+  }
+}
