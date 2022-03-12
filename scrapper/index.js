@@ -21,19 +21,28 @@ const extractListings = (htmlPage) => {
   //loading the html
   let $ = load(htmlPage);
 
-  //   return $("div[class=js_listingResultsContainer]").html();
-  let l;
-  $("div.p24_promotedTile").each((i, e) => {
-    console.log(i);
-    if (i === 0) {
-      const title = e.attribs.title;
-      const listing_id = e.attribs["data-listing-number"];
-      const price = $(e).find(".p24_price").text().trim();
-      const size = $(e).find(".p24_size").find("span").text();
-      //   const no_bedrooms = $(e).find(".p24_price").html();
-      //   const no_bathrooms = $(e).find(".p24_price").html();
-      console.log({ title, listing_id, price, size });
-    }
+  $("div.p24_regularTile").each((i, e) => {
+    const listing = {};
+
+    listing["listing_id"] = e.attribs["data-listing-number"];
+    listing["title"] = $(e).find("meta[itemprop=name]").attr("content");
+
+    listing["price"] = parseFloat(
+      $(e).find(".p24_price").text().trim().replace(/[R ]+/g, "")
+    );
+    listing["size"] = parseFloat($(e).find(".p24_size").find("span").text());
+    listing["no_bedrooms"] = parseFloat(
+      $(e).find("span[title=Bedrooms]").find("span").text()
+    );
+    listing["no_bathrooms"] = parseFloat(
+      $(e).find("span[title=Bathrooms]").find("span").text()
+    );
+    listing["no_parking_spaces"] = parseFloat(
+      $(e).find("span[title='Parking Spaces']").find("span").text()
+    );
+    listing["address"] = $(e).find(".p24_address").text();
+
+    console.log(listing);
   });
 
   //   console.log(l);
