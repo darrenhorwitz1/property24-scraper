@@ -40,6 +40,7 @@ const extractListings = (htmlPage) => {
     listing["no_parking_spaces"] = parseFloat(
       $(e).find("span[title='Parking Spaces']").find("span").text()
     );
+    listing["location"] = $(e).find(".p24_location").text();
     listing["address"] = $(e).find(".p24_address").text();
 
     console.log(listing);
