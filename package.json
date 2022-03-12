@@ -15,10 +15,13 @@
   "bugs": {
     "url": "https://github.com/darrenhorwitz1/property24-scraper/issues"
   },
-  "type": "module",
+  "type": "commonjs",
   "homepage": "https://github.com/darrenhorwitz1/property24-scraper#readme",
   "dependencies": {
+    "axios": "^0.26.1",
+    "axios-cached-dns-resolve": "^3.0.4",
     "cheerio": "^1.0.0-rc.10",
+    "esm": "^3.2.25",
     "node-fetch": "^3.2.3"
   }
 }
