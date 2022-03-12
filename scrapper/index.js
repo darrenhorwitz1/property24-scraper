@@ -1,6 +1,7 @@
 //dependencies
 import fetch from "node-fetch";
-import cheerio, { load } from "cheerio";
+import { load } from "cheerio";
+import fs from "fs/promises";
 
 const fetchHtml = async (url) => {
   const response = await fetch(url);
@@ -17,7 +18,9 @@ const fetchHtml = async (url) => {
  * - div with class "p24_content" has the details of a property listing:price, bedrooms, bathroom, size
  */
 
-const extractListings = (htmlPage) => {
+const extractListingsData = (htmlPage) => {
+  const listingsArr = [];
+
   //loading the html
   let $ = load(htmlPage);
 
@@ -43,15 +46,41 @@ const extractListings = (htmlPage) => {
     listing["location"] = $(e).find(".p24_location").text();
     listing["address"] = $(e).find(".p24_address").text();
 
-    console.log(listing);
+    listingsArr.push(listing);
   });
 
   //   console.log(l);
 
-  return "done";
+  return listingsArr;
 };
 
-const extractPaginationBar = (htmlPage) => {};
+const extractLastPageFromPaginationBar = (htmlPage) => {
+  let $ = load(htmlPage);
+  const lastPageNumber = parseFloat(
+    $("ul.pagination").find("li").last().text()
+  );
+  return lastPageNumber;
+};
+
+const createPageNumberList = (lastPageNumber) => {
+  const arr = [];
+  for (let i = 0; i < lastPageNumber; i++) {
+    arr.push(i + 1);
+  }
+  return arr;
+};
+
+const extractListingsPerPage = async (url, pageNumber) => {
+  let html;
+  if (pageNumber === 1) {
+    html = await fetchHtml(url);
+  } else {
+    html = await fetchHtml(`${url}/p${pageNumber}`);
+  }
+
+  console.log(`extracting PAGE ${pageNumber} `);
+  return await extractListingsData(html);
+};
 
 const scrapper = async () => {
   let url =
@@ -59,9 +88,40 @@ const scrapper = async () => {
 
   console.log("fetching");
   const html = await fetchHtml(url);
+  const lastPage = extractLastPageFromPaginationBar(html);
+  const pageNumberList = createPageNumberList(lastPage);
 
-  const listings = extractListings(html);
-  console.log(listings);
+  const getListingsAsync = pageNumberList.map((pageNumber) =>
+    extractListingsPerPage(url, pageNumber)
+  );
+  const listOfListingArrays = await Promise.all(getListingsAsync);
+
+  const newList = [].concat.apply([], listOfListingArrays);
+  console.log(newList);
 };
+
+const slowScrapper = async () => {
+  let url = "https://www.property24.com/for-sale/gauteng/1";
+
+  console.log("fetching");
+  const html = await fetchHtml(url);
+  const lastPage = extractLastPageFromPaginationBar(html);
+  const pageNumberList = createPageNumberList(lastPage);
+  const listings = [];
+
+  for (let page in pageNumberList) {
+    const pageDataList = await extractListingsPerPage(url, page);
+    listings.push(pageDataList);
+  }
+  const newList = [].concat.apply([], listings);
+  
+  console.log(newList);
+};
+
+//todo
+const fastScrapper = async () => {};
+
+//todo
+const superFastScrapper = async () => {};
 
 export default scrapper;
